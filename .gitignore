@@ -1,0 +1,37 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# Claude FE Agent - Git Ignore
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Memory cache (machine-specific project data)
+# Uncomment if you want to share memory across machines
+memory/projects/*/
+
+# Keep the memory directory structure
+!memory/
+!memory/index.json
+
+# Local workflow state
+workflow-state/
+
+# Credentials (NEVER commit these)
+.credentials.json
+*.credentials
+*.secret
+*.key
+
+# Backup files created by setup script
+*.backup.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp

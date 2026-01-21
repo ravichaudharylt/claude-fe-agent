@@ -1,0 +1,211 @@
+{
+  "$schema": "./workflow-config-schema.json",
+  "_comment": "Generic configuration for multi-phase feature implementation - works across any FE repo",
+
+  "general": {
+    "state_directory": ".claude/workflow-state",
+    "repo_context_file": "CLAUDE.md",
+    "max_iterations_per_phase": 5,
+    "auto_proceed_on_approval": false,
+    "auto_detect_tech_stack": true
+  },
+
+  "tech_stack_detection": {
+    "_comment": "Auto-detect project type from package.json and file structure",
+    "detection_files": ["package.json", "tsconfig.json", "vite.config.js", "next.config.js", "nuxt.config.js"],
+    "framework_indicators": {
+      "react": ["react", "react-dom"],
+      "nextjs": ["next"],
+      "vue": ["vue"],
+      "nuxt": ["nuxt"],
+      "angular": ["@angular/core"],
+      "svelte": ["svelte"]
+    },
+    "state_management_indicators": {
+      "redux": ["redux", "@reduxjs/toolkit", "react-redux"],
+      "zustand": ["zustand"],
+      "mobx": ["mobx", "mobx-react"],
+      "vuex": ["vuex"],
+      "pinia": ["pinia"],
+      "recoil": ["recoil"],
+      "jotai": ["jotai"]
+    },
+    "component_library_indicators": {
+      "mui": ["@mui/material", "@material-ui/core"],
+      "chakra": ["@chakra-ui/react"],
+      "antd": ["antd"],
+      "primer": ["@primer/react"],
+      "radix": ["@radix-ui"],
+      "shadcn": ["@shadcn/ui"],
+      "tailwind": ["tailwindcss"]
+    }
+  },
+
+  "directory_detection": {
+    "_comment": "Common FE directory patterns - scan to find which exist",
+    "common_source_dirs": ["src", "app", "lib", "pages", "components"],
+    "common_component_dirs": [
+      "src/components", "src/Components", "src/component",
+      "components", "app/components",
+      "src/features", "src/modules",
+      "src/ui", "src/shared"
+    ],
+    "common_page_dirs": [
+      "src/pages", "pages", "app",
+      "src/views", "src/screens",
+      "src/routes", "src/container"
+    ],
+    "common_hook_dirs": [
+      "src/hooks", "src/customHooks",
+      "hooks", "lib/hooks",
+      "src/utils/hooks"
+    ],
+    "common_state_dirs": [
+      "src/store", "src/redux", "src/state",
+      "store", "src/stores",
+      "src/context", "src/providers"
+    ],
+    "common_util_dirs": [
+      "src/utils", "src/helpers", "src/lib",
+      "utils", "lib", "helpers",
+      "src/services", "src/api"
+    ],
+    "common_test_dirs": [
+      "src/__tests__", "__tests__", "tests", "test",
+      "src/tests", "spec", "src/spec"
+    ],
+    "ignore_dirs": [
+      "node_modules", "build", "dist", ".git",
+      "coverage", ".next", ".nuxt", "out"
+    ]
+  },
+
+  "phase1_requirements": {
+    "source": {
+      "primary": "jira",
+      "fallback_to_manual": true,
+      "supported_sources": ["jira", "github_issues", "linear", "notion", "manual"]
+    },
+
+    "jira": {
+      "cloud_id": "YOUR_CLOUD_ID_HERE",
+      "_cloud_id_instructions": "Run: claude mcp then use getAccessibleAtlassianResources to find your cloudId",
+      "fields_to_fetch": [
+        "summary", "description", "issuetype", "status",
+        "priority", "labels", "issuelinks", "comment"
+      ],
+      "custom_fields": {
+        "rca": "customfield_XXXXX",
+        "_comment": "Update with your JIRA custom field IDs"
+      },
+      "linked_issues": {
+        "fetch_summaries": true,
+        "max_linked_issues": 10
+      }
+    },
+
+    "github_issues": {
+      "_comment": "For repos using GitHub Issues instead of Jira",
+      "enabled": true
+    },
+
+    "manual_input": {
+      "required_fields": ["summary", "description"],
+      "optional_fields": ["acceptance_criteria", "constraints", "out_of_scope"],
+      "ask_clarifying_questions": true
+    },
+
+    "validation": {
+      "require_acceptance_criteria": true,
+      "min_description_length": 50,
+      "ask_if_incomplete": true,
+      "block_if_missing": ["summary"]
+    }
+  },
+
+  "phase2_exploration": {
+    "auto_detect_directories": true,
+    "max_files_to_read": 25,
+    "parallel_agents": 3,
+    "agent_timeout_ms": 120000
+  },
+
+  "phase3_approach": {
+    "require_user_approval": true,
+    "max_approaches_to_present": 3,
+    "consider_factors": [
+      "existing_patterns",
+      "complexity",
+      "maintainability",
+      "testing_ease"
+    ]
+  },
+
+  "phase4_planning": {
+    "require_user_approval": true,
+    "include_test_plan": true,
+    "estimate_impact": true,
+    "categorize_changes": ["create", "modify", "delete"]
+  },
+
+  "phase5_testing": {
+    "auto_detect_test_framework": true,
+    "test_framework_detection": {
+      "jest": ["jest", "@jest/core"],
+      "vitest": ["vitest"],
+      "mocha": ["mocha"],
+      "jasmine": ["jasmine"],
+      "playwright": ["@playwright/test"],
+      "cypress": ["cypress"]
+    },
+    "test_directory": "auto-detect",
+    "coverage_threshold": 70,
+    "tdd_enforcement": true
+  },
+
+  "phase6_execution": {
+    "max_iterations": 10,
+    "commit_after_each_step": false,
+    "run_tests_after_each_change": true,
+    "rollback_on_failure": true
+  },
+
+  "phase7_validation": {
+    "lint_check": true,
+    "type_check": "auto-detect",
+    "bundle_analysis": false,
+    "visual_testing": {
+      "enabled": false,
+      "tool": "playwright"
+    }
+  },
+
+  "integrations": {
+    "jira": {
+      "enabled": true,
+      "mcp_server": "atlassian"
+    },
+    "figma": {
+      "enabled": true,
+      "mcp_server": "figma"
+    },
+    "github": {
+      "enabled": true,
+      "mcp_server": "github"
+    }
+  },
+
+  "pr_creation": {
+    "auto_create": false,
+    "default_base_branch": "auto-detect",
+    "base_branch_detection": {
+      "check_branches": ["main", "master", "develop", "dev", "stage"],
+      "use_default_branch": true
+    },
+    "pr_template": {
+      "include_summary": true,
+      "include_test_plan": true,
+      "include_screenshots": false
+    }
+  }
+}
