@@ -12,6 +12,22 @@ A generic, reusable Claude Code agent configuration for frontend developers. Wor
 
 ## Quick Start
 
+### Prerequisites
+
+- **Node.js** and npm installed
+- **GitHub CLI** (`gh`) installed and authenticated for `/bulk-update-packages`:
+
+  ```bash
+  # Install gh CLI (macOS)
+  brew install gh
+
+  # Authenticate
+  gh auth login
+
+  # Verify
+  gh auth status
+  ```
+
 ### 1. Clone and Install
 
 ```bash
@@ -37,12 +53,14 @@ claude
 # You'll see:
 # - atlassian: Click to authenticate with Jira/Confluence
 # - figma: Click to authenticate with Figma
+# - github: Click to authenticate with GitHub
 #
 # After authenticating, tokens are stored in ~/.claude/.credentials.json
 # and auto-refresh - you'll never need to authenticate again!
 ```
 
 **What happens after authentication:**
+
 - Tokens stored securely in `~/.claude/.credentials.json`
 - Tokens auto-refresh before expiry
 - Works across ALL projects (user-level config)
@@ -61,26 +79,53 @@ claude
 
 ### Skills
 
-| Skill | Description |
-|-------|-------------|
-| `/remember` | Cache project context for instant loading |
-| `/implement` | Full 7-phase implementation workflow |
-| `/gather-requirements` | Fetch requirements from Jira/GitHub |
-| `/explore-codebase` | Deep codebase analysis (memory-aware) |
-| `/design-to-code` | Convert Figma designs to code |
+| Skill                   | Description                                                  |
+| ----------------------- | ------------------------------------------------------------ |
+| `/remember`             | Cache project context for instant loading                    |
+| `/implement`            | Full 7-phase implementation workflow                         |
+| `/gather-requirements`  | Fetch requirements from Jira/GitHub                          |
+| `/explore-codebase`     | Deep codebase analysis (memory-aware)                        |
+| `/design-to-code`       | Convert Figma designs to code                                |
+| `/bulk-update-packages` | Update npm packages across multiple FE repos (uses `gh` CLI) |
+
+### Bulk Update Packages
+
+Update shared npm packages across multiple repositories in one command:
+
+```bash
+# Update to specific version
+/bulk-update-packages @lambdatestincprivate/lt-common-header 0.3.62
+
+# Check current versions across all repos
+/bulk-update-packages --status @lambdatestincprivate/lt-common-header
+```
+
+**How it works:**
+
+1. Scans only repos listed in the skill's registry
+2. Forks each repo (even if you have write access - for safety)
+3. Syncs fork with upstream
+4. Updates package.json and creates PR
+
+**Prerequisites:**
+
+- GitHub CLI authenticated: `gh auth login`
+- Verify with: `gh auth status`
+
+**Note:** This skill uses `gh` CLI directly, not GitHub MCP.
 
 ### Agents
 
-| Agent | Description |
-|-------|-------------|
+| Agent           | Description                    |
+| --------------- | ------------------------------ |
 | `code-reviewer` | Reviews code in any FE project |
 
 ### Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `CLAUDE.md` | Personal context template |
-| `settings.json` | Permissions and enabled plugins |
+| File                   | Purpose                            |
+| ---------------------- | ---------------------------------- |
+| `CLAUDE.md`            | Personal context template          |
+| `settings.json`        | Permissions and enabled plugins    |
 | `workflow-config.json` | Auto-detection and workflow config |
 
 ## Directory Structure
@@ -101,7 +146,8 @@ claude-fe-agent/
 │   ├── gather-requirements/     # Requirements gathering
 │   ├── explore-codebase/        # Codebase exploration
 │   ├── design-to-code/          # Figma to code
-│   └── implement/               # Master orchestrator
+│   ├── implement/               # Master orchestrator
+│   └── bulk-update-packages/    # Bulk npm package updates
 │
 ├── agents/
 │   └── code-reviewer.md         # Code review agent
@@ -134,6 +180,7 @@ Return visit:
 ```
 
 **What gets cached:**
+
 - Tech stack and versions
 - Directory structure
 - Code patterns and conventions
@@ -157,6 +204,7 @@ Phase 7: Validate & Finalize    ─┘
 ### Personal Context
 
 Edit `CLAUDE.md` with:
+
 - Your name and role
 - Projects you work on
 - Your conventions and preferences
@@ -165,6 +213,7 @@ Edit `CLAUDE.md` with:
 ### Workflow Config
 
 Edit `workflow-config.json` to:
+
 - Set your Jira Cloud ID
 - Customize directory detection patterns
 - Adjust validation rules
@@ -172,6 +221,7 @@ Edit `workflow-config.json` to:
 ### Adding Skills
 
 Create a new skill:
+
 ```bash
 mkdir skills/my-skill
 cat > skills/my-skill/skill.md << 'EOF'
@@ -188,6 +238,7 @@ EOF
 ### Adding Agents
 
 Create a new agent:
+
 ```bash
 cat > agents/my-agent.md << 'EOF'
 ---
@@ -242,17 +293,20 @@ Every subsequent session:
 
 ### Token Storage
 
-| File | Contents | Sensitive? |
-|------|----------|------------|
-| `~/.claude/.credentials.json` | OAuth tokens | Yes - never commit! |
-| `~/.claude/settings.json` | MCP server URLs | No - safe to share |
+| File                          | Contents        | Sensitive?          |
+| ----------------------------- | --------------- | ------------------- |
+| `~/.claude/.credentials.json` | OAuth tokens    | Yes - never commit! |
+| `~/.claude/settings.json`     | MCP server URLs | No - safe to share  |
 
 ### Pre-configured MCP Servers
 
-| Server | URL | Purpose |
-|--------|-----|---------|
-| `atlassian` | `mcp.atlassian.com` | Jira, Confluence |
-| `figma` | `mcp.figma.com` | Design specs |
+| Server      | URL                 | Purpose                   | Status      |
+| ----------- | ------------------- | ------------------------- | ----------- |
+| `atlassian` | `mcp.atlassian.com` | Jira, Confluence          | ✅ Working  |
+| `figma`     | `mcp.figma.com`     | Design specs              | ✅ Working  |
+| `github`    | `mcp.github.com`    | GitHub repos, PRs, issues | ⚠️ Optional |
+
+**Note on GitHub MCP:** The `/bulk-update-packages` skill uses `gh` CLI directly instead of GitHub MCP for reliability. GitHub MCP may have connectivity issues - use `gh` CLI as fallback for GitHub operations.
 
 ### Syncing Auth Across Machines
 
@@ -286,6 +340,7 @@ cp ~/safe-backup/.credentials.json ~/.claude/
 ### MCP Token Expired
 
 Tokens auto-refresh, but if issues occur:
+
 ```bash
 # Check token status
 /mcp
