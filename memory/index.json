@@ -1,5 +1,13 @@
 {
   "_comment": "Index of all remembered projects. Auto-updated by /remember skill.",
-  "projects": {},
-  "last_updated": null
+  "projects": {
+    "dotlapse-frontend-secured": {
+      "path": "/Users/yashverma/Desktop/dotlapse-frontend-secured",
+      "last_accessed": "2026-01-22",
+      "framework": "React 18.3.1",
+      "state_management": "Redux",
+      "styling": ["Tailwind CSS", "Styled Components"]
+    }
+  },
+  "last_updated": "2026-01-22T11:17:00Z"
 }
