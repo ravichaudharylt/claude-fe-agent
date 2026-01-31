@@ -1,10 +1,10 @@
 ---
-name: git-push
+name: git-push-merge-pr
 description: Stage, commit, push changes to your fork and create a PR to upstream/stage. Works across any repository you're working in.
 allowed-tools: Bash, AskUserQuestion, TodoWrite
 ---
 
-# Git Push Skill
+# Git Push & Merge PR Skill
 
 ## Purpose
 
@@ -12,24 +12,24 @@ Quickly push your local changes to your fork and create a PR to upstream's `stag
 
 ## Triggers
 
-- `/git-push` - Stage all, commit, push, and create PR
-- `/git-push -m "commit message"` - With custom commit message
-- `/git-push --no-pr` - Push only, don't create PR
+- `/git-push-merge-pr` - Stage all, commit, push, and create PR
+- `/git-push-merge-pr -m "commit message"` - With custom commit message
+- `/git-push-merge-pr --no-pr` - Push only, don't create PR
 
 ### Examples
 
 ```bash
 # Standard workflow - stages, commits, pushes, creates PR
-/git-push
+/git-push-merge-pr
 
 # With custom commit message
-/git-push -m "fix: resolve header alignment issue"
+/git-push-merge-pr -m "fix: resolve header alignment issue"
 
 # Just push, skip PR creation
-/git-push --no-pr
+/git-push-merge-pr --no-pr
 
 # Push to a different upstream branch
-/git-push --base develop
+/git-push-merge-pr --base develop
 ```
 
 ---
@@ -173,7 +173,7 @@ gh pr create \
 - [ ] Ready for review
 
 ---
-Generated with `/git-push`
+Generated with `/git-push-merge-pr`
 ```
 
 ### Step 7: Summary Report
@@ -202,12 +202,12 @@ Next steps:
 
 | Command | Description |
 |---------|-------------|
-| `/git-push` | Full workflow: stage, commit, push, create PR |
-| `/git-push -m "message"` | With custom commit message |
-| `/git-push --no-pr` | Push only, skip PR creation |
-| `/git-push --base <branch>` | PR to different base branch (default: stage) |
-| `/git-push --draft` | Create PR as draft |
-| `/git-push --force` | Force push (use with caution) |
+| `/git-push-merge-pr` | Full workflow: stage, commit, push, create PR |
+| `/git-push-merge-pr -m "message"` | With custom commit message |
+| `/git-push-merge-pr --no-pr` | Push only, skip PR creation |
+| `/git-push-merge-pr --base <branch>` | PR to different base branch (default: stage) |
+| `/git-push-merge-pr --draft` | Create PR as draft |
+| `/git-push-merge-pr --force` | Force push (use with caution) |
 
 ---
 
@@ -320,7 +320,7 @@ The skill works best with these branch naming patterns:
 ## Example Session
 
 ```
-User: /git-push -m "fix: resolve header z-index issue"
+User: /git-push-merge-pr -m "fix: resolve header z-index issue"
 
 ═══════════════════════════════════════════════════════════════════════════════
 GIT PUSH PREVIEW
